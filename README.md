@@ -7,7 +7,7 @@ Print all unique colors from an image with their frequency, hex, RGB, and OKLCH 
 Install using `uv`:
 
 ```bash
-uv tool install git+https://github.com/username/pixelog.git
+uv tool install git+https://github.com/slezica/pixelog.git
 ```
 
 Uninstall with `uv tool uninstall pixelog`.
