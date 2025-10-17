@@ -1,5 +1,6 @@
 import sys
 import os
+import argparse
 from pathlib import Path
 from collections import Counter
 
@@ -10,8 +11,8 @@ from colorspacious import cspace_convert
 def main():
     try:
         # Parse arguments:
-        image_path, show_all = parse_args()
-        img = load_image(image_path)
+        args = parse_args()
+        img = load_image(args.image_path)
 
         # Extract and count pixels of colors:
         color_counts = extract_colors(img)
@@ -25,7 +26,7 @@ def main():
             percentage = (count / total_pixels) * 100
 
             # Skip colors below 0.01% unless --all flag is set:
-            if not show_all and percentage < 0.01:
+            if not args.all and percentage < 0.01:
                 continue
 
             print(format_color_line(r, g, b, count, total_pixels))
@@ -38,30 +39,33 @@ def main():
 
 def parse_args():
     """Parse and validate command line arguments."""
-    args = sys.argv[1:]
+    # Parse arguments:
+    parser = argparse.ArgumentParser(
+        description="Extract and display all colors from images"
+    )
+    parser.add_argument(
+        "image_path",
+        type=Path,
+        help="Path to the image file"
+    )
+    parser.add_argument(
+        "--all",
+        action="store_true",
+        help="Show all colors, including those appearing less than 0.01%%"
+    )
 
-    # Check for --all flag:
-    show_all = "--all" in args
-    if show_all:
-        args.remove("--all")
-
-    # Validate remaining arguments:
-    if len(args) != 1:
-        sys.stderr.write("Usage: pixelog [--all] <image_path>\n")
-        sys.exit(1)
+    args = parser.parse_args()
 
     # Validate image path:
-    image_path = Path(args[0])
-
-    if not image_path.exists():
-        sys.stderr.write(f"Error: File not found: {image_path}\n")
+    if not args.image_path.exists():
+        sys.stderr.write(f"Error: File not found: {args.image_path}\n")
         sys.exit(1)
 
-    if not image_path.is_file():
-        sys.stderr.write(f"Error: Not a file: {image_path}\n")
+    if not args.image_path.is_file():
+        sys.stderr.write(f"Error: Not a file: {args.image_path}\n")
         sys.exit(1)
 
-    return image_path, show_all
+    return args
 
 
 def load_image(image_path):
