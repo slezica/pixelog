@@ -9,18 +9,25 @@ from colorspacious import cspace_convert
 
 def main():
     try:
-        # Load image:
-        image_path = parse_args()
+        # Parse arguments:
+        image_path, show_all = parse_args()
         img = load_image(image_path)
 
         # Extract and count pixels of colors:
         color_counts = extract_colors(img)
         sorted_colors = sorted(color_counts.items(), key=lambda x: x[1], reverse=True)
 
-        # Calculate total pixels
+        # Calculate total pixels:
         total_pixels = sum(color_counts.values())
 
+        # Filter and output colors:
         for (r, g, b), count in sorted_colors:
+            percentage = (count / total_pixels) * 100
+
+            # Skip colors below 0.01% unless --all flag is set:
+            if not show_all and percentage < 0.01:
+                continue
+
             print(format_color_line(r, g, b, count, total_pixels))
 
     except (BrokenPipeError, KeyboardInterrupt):
@@ -31,11 +38,20 @@ def main():
 
 def parse_args():
     """Parse and validate command line arguments."""
-    if len(sys.argv) != 2:
-        sys.stderr.write("Usage: pixelog <image_path>\n")
+    args = sys.argv[1:]
+
+    # Check for --all flag:
+    show_all = "--all" in args
+    if show_all:
+        args.remove("--all")
+
+    # Validate remaining arguments:
+    if len(args) != 1:
+        sys.stderr.write("Usage: pixelog [--all] <image_path>\n")
         sys.exit(1)
 
-    image_path = Path(sys.argv[1])
+    # Validate image path:
+    image_path = Path(args[0])
 
     if not image_path.exists():
         sys.stderr.write(f"Error: File not found: {image_path}\n")
@@ -45,7 +61,7 @@ def parse_args():
         sys.stderr.write(f"Error: Not a file: {image_path}\n")
         sys.exit(1)
 
-    return image_path
+    return image_path, show_all
 
 
 def load_image(image_path):
@@ -67,20 +83,20 @@ def extract_colors(img):
 
 def format_color_line(r, g, b, count, total_pixels):
     """Format a single color line with colored block and all formats."""
-    # Calculate percentage
+    # Calculate percentage:
     percentage = (count / total_pixels) * 100
     percentage_str = f"{percentage:6.2f}%"
 
-    # ANSI 24-bit true color escape code
+    # ANSI 24-bit true color escape code:
     colored_block = f"\x1b[38;2;{r};{g};{b}m██\x1b[0m"
 
-    # Hex format (always 7 chars)
+    # Hex format (always 7 chars):
     hex_color = f"#{r:02x}{g:02x}{b:02x}"
 
-    # RGB format - natural, then right-pad to 18 chars (max: "rgb(255, 255, 255)")
+    # RGB format - natural, then right-pad to 18 chars (max: "rgb(255, 255, 255)"):
     rgb_color = f"rgb({r}, {g}, {b})".ljust(18)
 
-    # OKLCH format - natural, then right-pad to 27 chars (max: "oklch(100.0% 9.999 360.0)")
+    # OKLCH format - natural, then right-pad to 27 chars (max: "oklch(100.0% 9.999 360.0)"):
     oklch_color = rgb_to_oklch(r, g, b).ljust(27)
 
     return f"{percentage_str} {colored_block} {hex_color} {rgb_color} {oklch_color}"
@@ -88,10 +104,10 @@ def format_color_line(r, g, b, count, total_pixels):
 
 def rgb_to_oklch(r, g, b):
     """Convert RGB (0-255) to OKLCH format."""
-    # Normalize RGB to 0-1 range
+    # Normalize RGB to 0-1 range:
     rgb_normalized = [r / 255.0, g / 255.0, b / 255.0]
 
-    # Convert to JCh (similar to OKLCH)
+    # Convert to JCh (similar to OKLCH):
     jch = cspace_convert(rgb_normalized, "sRGB1", "JCh")
 
     # JCh format: [J (lightness), C (chroma), h (hue)]
