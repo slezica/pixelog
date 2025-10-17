@@ -7,17 +7,20 @@ from colorspacious import cspace_convert
 
 
 def main():
-    image_path = parse_args()
+    try:
+        # Load image:
+        image_path = parse_args()
+        img = load_image(image_path)
 
-    img = load_image(image_path)
-    color_counts = extract_colors(img)
+        # Extract and count pixels of colors:
+        color_counts = extract_colors(img)
+        sorted_colors = sorted(color_counts.items(), key=lambda x: x[1], reverse=True)
 
-    # Sort by count (most common first)
-    sorted_colors = sorted(color_counts.items(), key=lambda x: x[1], reverse=True)
+        for (r, g, b), count in sorted_colors:
+            print(format_color_line(r, g, b))
 
-    # Output each color
-    for (r, g, b), count in sorted_colors:
-        print(format_color_line(r, g, b))
+    except (BrokenPipeError, KeyboardInterrupt):
+        sys.exit(0)
 
 
 def parse_args():
