@@ -1,4 +1,5 @@
 import sys
+import os
 from pathlib import Path
 from collections import Counter
 
@@ -16,10 +17,15 @@ def main():
         color_counts = extract_colors(img)
         sorted_colors = sorted(color_counts.items(), key=lambda x: x[1], reverse=True)
 
+        # Calculate total pixels
+        total_pixels = sum(color_counts.values())
+
         for (r, g, b), count in sorted_colors:
-            print(format_color_line(r, g, b))
+            print(format_color_line(r, g, b, count, total_pixels))
 
     except (BrokenPipeError, KeyboardInterrupt):
+        devnull = os.open(os.devnull, os.O_WRONLY)
+        os.dup2(devnull, sys.stdout.fileno()) # prevent errors on final flush runtime makes
         sys.exit(0)
 
 
@@ -59,21 +65,25 @@ def extract_colors(img):
     return color_counts
 
 
-def format_color_line(r, g, b):
+def format_color_line(r, g, b, count, total_pixels):
     """Format a single color line with colored block and all formats."""
+    # Calculate percentage
+    percentage = (count / total_pixels) * 100
+    percentage_str = f"{percentage:6.2f}%"
+
     # ANSI 24-bit true color escape code
     colored_block = f"\x1b[38;2;{r};{g};{b}m██\x1b[0m"
 
-    # Hex format
+    # Hex format (always 7 chars)
     hex_color = f"#{r:02x}{g:02x}{b:02x}"
 
-    # RGB format
-    rgb_color = f"rgb({r}, {g}, {b})"
+    # RGB format - natural, then right-pad to 18 chars (max: "rgb(255, 255, 255)")
+    rgb_color = f"rgb({r}, {g}, {b})".ljust(18)
 
-    # OKLCH format
-    oklch_color = rgb_to_oklch(r, g, b)
+    # OKLCH format - natural, then right-pad to 27 chars (max: "oklch(100.0% 9.999 360.0)")
+    oklch_color = rgb_to_oklch(r, g, b).ljust(27)
 
-    return f"{colored_block} {hex_color} {rgb_color} {oklch_color}"
+    return f"{percentage_str} {colored_block} {hex_color} {rgb_color} {oklch_color}"
 
 
 def rgb_to_oklch(r, g, b):
@@ -85,7 +95,6 @@ def rgb_to_oklch(r, g, b):
     jch = cspace_convert(rgb_normalized, "sRGB1", "JCh")
 
     # JCh format: [J (lightness), C (chroma), h (hue)]
-    # Convert to OKLCH format string
     lightness = jch[0]  # 0-100
     chroma = jch[1] / 100.0  # Normalize chroma
     hue = jch[2]  # 0-360
