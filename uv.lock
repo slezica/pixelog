@@ -125,9 +125,9 @@ wheels = [
 ]
 
 [[package]]
-name = "screenshot-pixel-color-print"
+name = "pixelog"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "colorspacious" },
     { name = "pillow" },

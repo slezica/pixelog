@@ -23,7 +23,7 @@ def main():
 def parse_args():
     """Parse and validate command line arguments."""
     if len(sys.argv) != 2:
-        sys.stderr.write("Usage: python main.py <image_path>\n")
+        sys.stderr.write("Usage: pixelog <image_path>\n")
         sys.exit(1)
 
     image_path = Path(sys.argv[1])
@@ -88,7 +88,3 @@ def rgb_to_oklch(r, g, b):
     hue = jch[2]  # 0-360
 
     return f"oklch({lightness:.1f}% {chroma:.3f} {hue:.1f})"
-
-
-if __name__ == "__main__":
-    main()
