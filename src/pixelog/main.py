@@ -89,7 +89,7 @@ def format_color_line(r, g, b, count, total_pixels):
     """Format a single color line with colored block and all formats."""
     # Calculate percentage:
     percentage = (count / total_pixels) * 100
-    percentage_str = f"{percentage:6.2f}%"
+    percentage_str = f"{percentage:05.2f}%"
 
     # ANSI 24-bit true color escape code:
     colored_block = f"\x1b[38;2;{r};{g};{b}m██\x1b[0m"
