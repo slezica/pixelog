@@ -94,20 +94,22 @@ def format_color_line(r, g, b, count, total_pixels):
     # ANSI 24-bit true color escape code:
     colored_block = f"\x1b[38;2;{r};{g};{b}m██\x1b[0m"
 
-    # Hex format (always 7 chars):
-    hex_color = f"#{r:02x}{g:02x}{b:02x}"
-
-    # RGB format - natural, then right-pad to 18 chars (max: "rgb(255, 255, 255)"):
-    rgb_color = f"rgb({r},{g},{b})".ljust(16)
-
-    # OKLCH format - natural, then right-pad to 27 chars (max: "oklch(100.0% 9.999 360.0)"):
-    oklch_color = rgb_to_oklch(r, g, b).ljust(27)
+    hex_color = render_hex(r, g, b)
+    rgb_color = render_rgb(r, g, b)
+    oklch_color = render_oklch(r, g, b)
 
     return f"{percentage_str} {colored_block} {hex_color} {rgb_color} {oklch_color}"
 
 
-def rgb_to_oklch(r, g, b):
-    """Convert RGB (0-255) to OKLCH format."""
+def render_hex(r, g, b):
+   return f"#{r:02x}{g:02x}{b:02x}"
+
+
+def render_rgb(r, g, b):
+    return f"rgb({r},{g},{b})".ljust(16)
+
+
+def render_oklch(r, g, b):
     # Normalize RGB to 0-1 range:
     rgb_normalized = [r / 255.0, g / 255.0, b / 255.0]
 
@@ -119,4 +121,4 @@ def rgb_to_oklch(r, g, b):
     chroma = jch[1] / 100.0  # Normalize chroma
     hue = jch[2]  # 0-360
 
-    return f"oklch({lightness:.1f}%,{chroma:.3f},{hue:.1f})"
+    return f"oklch({lightness:.1f}%,{chroma:.3f},{hue:.1f})".ljust(27)
