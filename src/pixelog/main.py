@@ -98,7 +98,7 @@ def format_color_line(r, g, b, count, total_pixels):
     hex_color = f"#{r:02x}{g:02x}{b:02x}"
 
     # RGB format - natural, then right-pad to 18 chars (max: "rgb(255, 255, 255)"):
-    rgb_color = f"rgb({r}, {g}, {b})".ljust(18)
+    rgb_color = f"rgb({r},{g},{b})".ljust(18)
 
     # OKLCH format - natural, then right-pad to 27 chars (max: "oklch(100.0% 9.999 360.0)"):
     oklch_color = rgb_to_oklch(r, g, b).ljust(27)
@@ -119,4 +119,4 @@ def rgb_to_oklch(r, g, b):
     chroma = jch[1] / 100.0  # Normalize chroma
     hue = jch[2]  # 0-360
 
-    return f"oklch({lightness:.1f}%, {chroma:.3f}, {hue:.1f})"
+    return f"oklch({lightness:.1f}%,{chroma:.3f},{hue:.1f})"
