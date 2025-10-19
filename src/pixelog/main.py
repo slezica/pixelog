@@ -41,7 +41,7 @@ def parse_args():
     """Parse and validate command line arguments."""
     # Parse arguments:
     parser = argparse.ArgumentParser(
-        description="Extract and display all colors from images"
+        description="Extract and display colors from images"
     )
     parser.add_argument(
         "image_path",
@@ -51,7 +51,7 @@ def parse_args():
     parser.add_argument(
         "--all",
         action="store_true",
-        help="Show all colors, including those appearing less than 0.01%%"
+        help="Show all colors (including < 0.01%%)"
     )
 
     args = parser.parse_args()
