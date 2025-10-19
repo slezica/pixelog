@@ -2,7 +2,7 @@
 
 Print all unique colors from an image with their frequency, hex, RGB, and OKLCH values.
 
-<img width="858" height="310" alt="image" src="https://github.com/user-attachments/assets/305c0ed8-2acb-4f0d-bcf1-de57b3787327" />
+<img width="855" height="383" alt="image" src="https://github.com/user-attachments/assets/14936d1b-73a0-49c7-96e8-5fef4c34775f" />
 
 
 ## Installation
