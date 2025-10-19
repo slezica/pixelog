@@ -119,4 +119,4 @@ def rgb_to_oklch(r, g, b):
     chroma = jch[1] / 100.0  # Normalize chroma
     hue = jch[2]  # 0-360
 
-    return f"oklch({lightness:.1f}% {chroma:.3f} {hue:.1f})"
+    return f"oklch({lightness:.1f}%, {chroma:.3f}, {hue:.1f})"
