@@ -2,7 +2,7 @@
 
 Print all unique colors from an image with their frequency, hex, RGB, and OKLCH values.
 
-<img width="688" height="310" alt="image" src="assets/demo.png" />
+<img width="688" alt="image" src="assets/demo.png" />
 
 ## Installation
 
